@@ -1,4 +1,6 @@
 /** @file background.c Documented background module
+ * 
+ * This file conatins changes by Esraaj Sarkar Gupta, 2025
  *
  * * Julien Lesgourgues, 17.04.2011
  * * routines related to ncdm written by T. Tram in 2011
@@ -128,6 +130,20 @@
  * @param pvecback      Output: vector (assumed to be already allocated)
  * @return the error status
  */
+
+#ifndef CLASS_BUILD_TAG
+#define CLASS_BUILD_TAG "futurebuild_test"
+#endif
+
+/* Esraaj: Banner function -- broadcast the build that is running. */
+static int background_banner(void) {
+  static int printed = 0;
+  if (printed) return _SUCCESS_;
+  fprintf(stderr, "[CLASS] build=%s file=%s compiled=%s %s\n",
+          CLASS_BUILD_TAG, __FILE__, __DATE__, __TIME__);
+  return _SUCCESS_;
+}
+
 
 int background_at_z(
                     struct background *pba,
@@ -1919,7 +1935,8 @@ int background_solve(
              pba->error_message);
 
   /** - Determine output vector */
-  loga_final = 0.; // with our conventions, loga is in fact log(a/a_0); we integrate until today, when log(a/a_0) = 0
+  loga_final = 5.0; // with our conventions, loga is in fact log(a/a_0); we integrate until today, when log(a/a_0) = 0
+  /* Esraaj's Change -- By default loga_final - .0 */
   pba->bt_size = ppr->background_Nloga;
 
   /** - allocate background tables */
@@ -2711,7 +2728,8 @@ int background_sources(
   a = exp(loga);
 
   /** - corresponding redhsift 1/a-1 */
-  pba->z_table[index_loga] = MAX(0.,1./a-1.);
+  /* pba->z_table[index_loga] = MAX(0.,1./a-1.); // <-- Esraaj's Change, this line limits z to .0 */
+  pba->z_table[index_loga] = 1./ a-1.;
 
   /** - corresponding conformal time */
   pba->tau_table[index_loga] = y[pba->index_bi_tau];
